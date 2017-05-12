@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Dojo survey</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type ="text/javascript">
+    $(document).ready(function (){
+        // this triggers the connection event in our server!
+        var socket = io.connect();
+
+        $('#survey_form').submit(function(p){   // when survey_form is submitted
+          p.preventDefault();
+          socket.emit("posted_form", { //this objects will be emited to the server
+            name: $('#name').val(),
+            location: $('#location').val(), //
+            language: $('#language').val(), //
+            comment: $('#comment').val() //
+          });
+        });
+
+        socket.on('updated_message', function (data){
+          $('#message').html("You emitted the following information to the server: " + JSON.stringify(data.response));
+          console.log(data)
+        });
+
+        socket.on('random_number', function (data){
+          $('#number').html("Your lucky number emitted by the server is : " + JSON.stringify(data.response));
+          console.log(data)
+        })
+      })
+    </script>
+  </head>
+  <body>
+    <div id="message">
+
+    </div>
+    <div id="number">
+
+    </div>
+    <div class="container">
+      <form action="" id="survey_form">
+        <p>Name: </p>
+        <input type="text" name="name" id="name">
+        <p>Location: </p>
+        <select name="location" id="location">
+          <option value="">Choose...</option>
+          <option value="SJ">SJ</option>
+          <option value="Seattle">NY</option>
+          <option value="SJSeattle">Seattle</option>
+          <option value="Washington">Washington</option>
+        </select>
+        <p>Language: </p>
+        <select name="language" id="language">
+          <option value="">Choose...</option>
+          <option value="python">Python</option>
+          <option value="Mean Satck">Mean Satck</option>
+          <option value="Django">Django</option>
+          <option value="Ruby">Ruby</option>
+        </select>
+        <p>Comment: (Optional)</p>
+        <textarea name="comment" id="comment"></textarea>
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+  </body>
+</html>
